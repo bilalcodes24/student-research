@@ -64,6 +64,15 @@ button {
     position: absolute;
 }
 
+#heheText {
+    margin-top: 15px;
+    font-size: 14px;
+    color: grey;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+
+
 #celebrationOverlay {
     position: fixed;
     inset: 0;
@@ -151,11 +160,14 @@ a {
     <button id="noBtn">No 😓</button>
 </div>
 
+<div id="heheText">hehe</div>
+
+
 <div id="celebrationOverlay">
     <br>
     <h1>🌹🌹🌹🌹🌹ILYSMMMMMMM!!!!!🌹🌹🌹🌹🌹</h1>
+    <h1>MY GORGEOUS ANGEL ON EARTH MY BEAUTIFUL GIRLFRIEND</h1>
     <div class="bigPop">🫶 💕 💝 💘 💝 💕 🫶</div>
-    <br>
     <br>
     <br>
     <p>You mean the world to me.</p>
@@ -169,6 +181,8 @@ a {
 
 <script>
 const noBtn = document.getElementById("noBtn");
+const heheText = document.getElementById("heheText");
+let noHoverCount = 0;
 const yesBtn = document.getElementById("yesBtn");
 const overlay = document.getElementById("celebrationOverlay");
 
@@ -177,6 +191,12 @@ noBtn.addEventListener("mouseover", function() {
     const y = Math.random() * (window.innerHeight - 120);
     noBtn.style.left = x + "px";
     noBtn.style.top = y + "px";
+
+    noHoverCount++;
+
+    if (noHoverCount == 2) {
+        heheText.style.opacity = 1;
+    }
 });
 
 yesBtn.addEventListener("click", function() {
@@ -202,7 +222,6 @@ function createHearts() {
 
 </body>
 </html>
-
 
 
 
