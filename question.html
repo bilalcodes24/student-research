@@ -11,8 +11,7 @@ body {
     padding: 0;
     font-family: 'Segoe UI', sans-serif;
     background: linear-gradient(135deg, #ff9a9e, #fad0c4);
-    height: 100vh;
-    overflow: hidden;
+    min-height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -26,6 +25,7 @@ body {
     box-shadow: 0 10px 30px rgba(0,0,0,0.2);
     position: relative;
     z-index: 2;
+    overflow: hidden;
 }
 
 h1 {
@@ -61,7 +61,7 @@ button {
 
 #noBtn {
     background-color: #ccc;
-    position: absolute;
+    position: relative;
 }
 
 #heheText {
@@ -69,20 +69,18 @@ button {
     font-size: 14px;
     color: grey;
     opacity: 0;
-    transition: opacity 0.5s ease;
+    transition: all 0.4s ease;
+    min-height: 20px;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.2);
 }
-
 
 #celebrationOverlay {
     position: fixed;
-    inset: 0;
-    background: linear-gradient(
-        135deg,
-        #f8e8ee,
-        #f2c6d8,
-        #e6a4b4,
-        #d87093
-    );
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: radial-gradient(circle at center, #ffe6f0 0%, #f8c1d7 100%);
     color: #3a1f2d;
     display: flex;
     flex-direction: column;
@@ -91,15 +89,18 @@ button {
     text-align: center;
     opacity: 0;
     visibility: hidden;
-    transition: 0.7s ease;
+    transition: opacity 0.8s ease 0.5s, visibility 0.8s ease 0.5s;
     z-index: 10;
     padding: 30px;
 }
+
 
 #celebrationOverlay p {
     font-size: 20px;
     max-width: 600px;
     line-height: 1.6;
+    margin: 10px 0;
+    text-align: center;
 }
 
 
@@ -108,18 +109,34 @@ button {
     visibility: visible;
 }
 
+.card {
+    background: white;
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    position: relative;
+    z-index: 2;
+    overflow: hidden;
+    transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.card.fadeOut {
+    opacity: 0;
+    transform: scale(0.95);
+}
+
 .bigPop {
     font-size: 50px;
     animation: pop 0.6s ease forwards;
 }
 
 .footnote {
-    position: absolute;
-    bottom: 20px;
     font-size: 14px;
     opacity: 0.6;
     letter-spacing: 3px;
     font-style: italic;
+    margin-top: auto;
+    padding-bottom: 60px;
 }
 
 
@@ -134,6 +151,24 @@ button {
     font-size: 20px;
     animation: floatUp 4s linear infinite;
     opacity: 0.9;
+}
+
+.transitionHeart {
+    position: fixed;
+    font-size: 60px;
+    animation: heartBurst 1s ease-out forwards;
+    pointer-events: none;
+}
+
+@keyframes heartBurst {
+    0% {
+        transform: translate(0, 0) scale(1);
+        opacity: 1;
+    }
+    100% {
+        transform: translate(var(--tx), var(--ty)) scale(0);
+        opacity: 0;
+    }
 }
 
 @keyframes floatUp {
@@ -160,21 +195,22 @@ a {
     <button id="noBtn">No 😓</button>
 </div>
 
-<div id="heheText">hehe</div>
+<div id="heheText"></div>
 
 
 <div id="celebrationOverlay">
-    <br>
-    <h1>🌹🌹🌹🌹🌹ILYSMMMMMMM!!!!!🌹🌹🌹🌹🌹</h1>
-    <h1>MY GORGEOUS ANGEL ON EARTH MY BEAUTIFUL GIRLFRIEND</h1>
-    <div class="bigPop">🫶 💕 💝 💘 💝 💕 🫶</div>
-    <br>
-    <br>
-    <p>You mean the world to me.</p>
-    <p>I love you more than I'll ever be able to show you.</p>
-    <p>You are my favourite person in the world.</p>
-    <p>MY FAVOURITE PERSON.</p>
-    <p>FOREVER.</p>
+    <div style="flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; width: 100%;">
+        <h1>🌹🌹🌹🌹🌹ILYSMMMMMMM!!!!!🌹🌹🌹🌹🌹</h1>
+        <h1>MY GORGEOUS ANGEL ON EARTH MY BEAUTIFUL GIRLFRIEND</h1>
+        <div class="bigPop">🫶 💕 💝 💘 💝 💕 🫶</div>
+        <br>
+        <br>
+        <p>You mean the world to me.</p>
+        <p>I love you more than I'll ever be able to show you.</p>
+        <p>You are my favourite person in the world.</p>
+        <p>MY FAVOURITE PERSON.</p>
+        <p>FOREVER.</p>
+    </div>
 
     <div class="footnote">K ♥ B</div>
 </div>
@@ -182,27 +218,89 @@ a {
 <script>
 const noBtn = document.getElementById("noBtn");
 const heheText = document.getElementById("heheText");
-let noHoverCount = 0;
 const yesBtn = document.getElementById("yesBtn");
 const overlay = document.getElementById("celebrationOverlay");
 
+let noHoverCount = 0;
+
 noBtn.addEventListener("mouseover", function() {
-    const x = Math.random() * (window.innerWidth - 120);
-    const y = Math.random() * (window.innerHeight - 120);
-    noBtn.style.left = x + "px";
-    noBtn.style.top = y + "px";
+
+    const card = document.querySelector(".card");
+    const cardRect = card.getBoundingClientRect();
+
+    const padding = 20;
+    const maxX = cardRect.width - noBtn.offsetWidth - padding;
+    const maxY = cardRect.height - noBtn.offsetHeight - padding;
+
+    const randomX = Math.random() * maxX;
+    const randomY = Math.random() * maxY;
+
+    noBtn.style.position = "absolute";
+    noBtn.style.left = randomX + "px";
+    noBtn.style.top = randomY + "px";
 
     noHoverCount++;
 
-    if (noHoverCount == 2) {
+    if (noHoverCount === 2) {
         heheText.style.opacity = 1;
+        heheText.innerText = "hehe";
+    }
+
+    if (noHoverCount === 4) {
+        heheText.innerText = "nice try";
+    }
+
+    if (noHoverCount === 6) {
+        heheText.innerText = "cmon man";
+    }
+
+    if (noHoverCount === 8) {
+        heheText.innerText = "PLS PLS PLS PLS PLS";
+        heheText.style.fontSize = "18px";
+        heheText.style.color = "#ff4d6d";
+        heheText.style.fontWeight = "600";
     }
 });
 
 yesBtn.addEventListener("click", function() {
-    overlay.classList.add("active");
-    createHearts();
+    const card = document.querySelector(".card");
+    const yesBtnRect = yesBtn.getBoundingClientRect();
+    
+    // Fade out the card
+    card.classList.add("fadeOut");
+    
+    // Create heart burst transition from yes button
+    heartBurst(yesBtnRect.left + yesBtnRect.width / 2, yesBtnRect.top + yesBtnRect.height / 2);
+    
+    // Show overlay after heart transition
+    setTimeout(() => {
+        overlay.classList.add("active");
+        createHearts();
+    }, 600);
 });
+
+function heartBurst(startX, startY) {
+    const burstCount = 12;
+    for (let i = 0; i < burstCount; i++) {
+        const heart = document.createElement("div");
+        heart.classList.add("transitionHeart");
+        heart.innerHTML = "💖";
+        
+        const angle = (i / burstCount) * Math.PI * 2;
+        const distance = 200;
+        const endX = Math.cos(angle) * distance;
+        const endY = Math.sin(angle) * distance;
+        
+        heart.style.left = startX + "px";
+        heart.style.top = startY + "px";
+        heart.style.setProperty("--tx", endX + "px");
+        heart.style.setProperty("--ty", endY + "px");
+        
+        document.body.appendChild(heart);
+        
+        setTimeout(() => heart.remove(), 1000);
+    }
+}
 
 function createHearts() {
     setInterval(() => {
@@ -222,6 +320,3 @@ function createHearts() {
 
 </body>
 </html>
-
-
-
